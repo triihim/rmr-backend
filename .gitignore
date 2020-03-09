@@ -4,4 +4,6 @@ node_modules
 # File defining db details such as table and column names.
 schema.js
 
+rmr_credentials.json
 test_credentials.txt
+gcpconfig.json

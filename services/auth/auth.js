@@ -41,8 +41,7 @@ async function loginUser({email, password}) {
             const token = await generateToken({ email: email, passwordHash: hash }).catch(console.log); // TODO: user model?
             return token;
         } else {
-            console.log("Comparison failed");
-            throw error;
+            throw new Error("Password hash match failed");
         }
     } catch (error) {
         console.log(error)

@@ -1,4 +1,4 @@
-const noSpaces = (str) => str.indexOf(" ") === -1;
+const noSpaces = (str) => str && str.indexOf(" ") === -1;
 
 function validateEmail(email) {
     return noSpaces(email) && /^\w+@\w+\.[a-z]{2,3}$/.test(email);

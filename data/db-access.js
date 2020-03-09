@@ -34,6 +34,26 @@ async function insertDevice({deviceId, ownerEmail}) {
 
 }
 
+async function getUserDevices(email) {
+    //select device_id from device where user_id=(select user_id from registered_user where email='test@test.com');
+    const deviceTable = schema.device.tableName;
+    const userTable = schema.user.tableName;
+    const deviceIdCol = schema.device.columns["deviceId"];
+    const userIdCol = schema.user.columns["userId"];
+    const emailCol = schema.user.columns["email"];
+
+    const query = `SELECT ${deviceIdCol} FROM ${deviceTable} 
+    WHERE ${userIdCol}=(SELECT ${userIdCol} FROM ${userTable} WHERE ${emailCol}='${email}');`;
+
+    try {
+        const result = await sql.query(query);
+        const devices = result.rows.map(d => d[deviceIdCol]);
+        return devices;
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function getUserPasswordHash(email) {
     const table = schema.user.tableName;
     const emailCol = schema.user.columns["email"];
@@ -54,3 +74,4 @@ async function getUserPasswordHash(email) {
 module.exports.insertUser = insertUser;
 module.exports.getUserPasswordHash = getUserPasswordHash;
 module.exports.insertDevice = insertDevice;
+module.exports.getUserDevices = getUserDevices;
