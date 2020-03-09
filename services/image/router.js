@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { authorizeRequest } = require("../auth/auth");
 const { getUserDeviceImages, getSignedUrl } = require("./image");
+const { validateDeviceOwnership } = require("../device/validate-owner");
 
 // Authorize all requests to image API.
 router.use(authorizeRequest);
@@ -18,10 +19,16 @@ router.get("/", async (req, res) => {
 router.get("/:filename", async (req, res) => {
     try {
         const filename = req.params.filename.replace("-", "/");
+        const deviceId = filename.split("/")[0];
+        
+        if (await validateDeviceOwnership(deviceId, req.authorizedUser.email) === false) {
+            return res.sendStatus(403);
+        }
+
         const signedUrl = await getSignedUrl(filename);
         res.send(signedUrl);
     } catch (error) {
-        res.status(408).send();
+        res.status(404).send();
     }
 });
 
