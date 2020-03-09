@@ -4,8 +4,9 @@ const { authorizeRequest } = require("../auth/auth");
 // Authorize all requests to image API.
 router.use(authorizeRequest);
 
-router.get("/images", (req, res) => {
-
+// /api/images
+router.get("/", (req, res) => {
+    res.send("Images")
 });
 
 module.exports = router;

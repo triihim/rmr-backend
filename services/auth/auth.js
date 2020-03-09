@@ -51,19 +51,23 @@ async function loginUser({email, password}) {
 }
 
 async function authorizeRequest(req, res, next) {
-    console.log("Authorizing request...");
     const token = req.headers["authorization"] && req.headers["authorization"].split(" ")[1];
 
     if(!token) return res.status(401).json({message: "No authorization header"});
 
-    const decodedToken = await validateToken(token);
-    if(decodedToken) {
-        const authorizedUser = { email: decodedToken.email };
-        req.authorizedUser = authorizedUser;
-        next();
-    } else {
+    try {
+        const decodedToken = await validateToken(token);
+        if(decodedToken) {
+            const authorizedUser = { email: decodedToken.email };
+            req.authorizedUser = authorizedUser;
+            next();
+        } else {
+            return res.sendStatus(401);
+        }
+    } catch (error) {
         return res.sendStatus(401);
     }
+    
 }
 
 
