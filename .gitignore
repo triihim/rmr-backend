@@ -1,0 +1,7 @@
+node_modules
+.env
+
+# File defining db details such as table and column names.
+schema.js
+
+test_credentials.txt
