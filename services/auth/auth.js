@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { Storage } = require("@google-cloud/storage");
 const db = require("../../data/db-access");
 
 function generateToken(payloadObject) {
@@ -69,7 +70,34 @@ async function authorizeRequest(req, res, next) {
     
 }
 
+function validateDevice(device) {
+    return new Promise((resolve, reject) => {
+      const storage = new Storage({projectId: process.env.GCP_PROJECT_ID, keyFilename: process.env.GCP_CREDENTIALS_FILENAME});
+      const bucketName = process.env.BUCKET_NAME;
+      const allowedDevicesFile = process.env.ALLOWED_DEVICES_FILE;
+      const stream = storage.bucket(bucketName).file(allowedDevicesFile).createReadStream();
+  
+      stream.on("data", data => {
+        const devices = JSON.parse(data.toString("utf8"));
+        if(devices.includes(device)) { 
+          console.log("Validated device");
+          return resolve(true);
+        }
+      });
+      
+      stream.on("error", error => {
+        console.error("Error reading allowed devices file");
+        reject(error);
+      });
+  
+      stream.on("end", () => {
+        return resolve(false);
+      })
+    })
+  }
 
 module.exports.registerUser = registerUser;
 module.exports.loginUser = loginUser;
 module.exports.authorizeRequest = authorizeRequest;
+module.exports.validateToken = validateToken;
+module.exports.validateDevice = validateDevice;

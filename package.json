@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "test": "jest",
-    "preinstall": "node gcp-setup.js"
+    "preinstall": "node gcp-setup.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",

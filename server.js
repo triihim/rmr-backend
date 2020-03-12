@@ -8,6 +8,18 @@ const deviceServiceRouter = require("./services/device/router");
 
 app.use(express.json());
 
+// Cors
+app.use((req,res,next) => {
+	console.log("Reveiced request");
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Headers", "*");
+	res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, HEAD");
+	if(req.method === "OPTIONS") {
+		return res.sendStatus(200);
+	};
+	next();
+});
+
 // Routes
 app.use("/auth", authServiceRouter);
 app.use("/api/images", imageServiceRouter);
