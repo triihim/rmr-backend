@@ -11,6 +11,7 @@ router.get("/", authorizeRequest, async (req, res) => {
         const imageNames = await getUserDeviceImages(req.authorizedUser.email);
         res.status(200).send(imageNames)
     } catch (error) {
+        console.error(error);
         res.status(500).send();
     }
 });
