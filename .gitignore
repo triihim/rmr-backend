@@ -2,7 +2,7 @@ node_modules
 .env
 
 # File defining db details such as table and column names.
-schema.js
+#schema.js
 
 rmr_credentials.json
 test_credentials.txt
