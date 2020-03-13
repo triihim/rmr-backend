@@ -3,7 +3,7 @@ const { authorizeRequest } = require("../auth/auth");
 const { getUserDeviceImages, getSignedUrl } = require("./image");
 const { validateDeviceOwnership } = require("../device/validate-owner");
 const { Storage } = require("@google-cloud/storage");
-const { validateDevice } = require("../auth/auth");
+const { authorizeDevice } = require("../auth/auth");
 
 // /api/images
 router.get("/", authorizeRequest, async (req, res) => {
@@ -38,20 +38,33 @@ router.post("/", async(req, res) => {
     const getFilepath = (tag) => tag + "/" + Date.now() + ".jpg";
 
     const device = req.headers["rmr_tag"];
-    if(await validateDevice(device)) {
+    if(await authorizeDevice(device)) {
         const bucketName = process.env.BUCKET_NAME;
         const storage = new Storage({projectId: process.env.GCP_PROJECT_ID, keyFilename: process.env.GCP_CREDENTIALS_FILENAME});
         const file = storage.bucket(bucketName).file(getFilepath(device));
 
-        req.pipe(file.createWriteStream({metadata: {contentType: "image/jpeg"}}))
+        const storageStream = file.createWriteStream({metadata: {contentType: "image/jpeg"}});
+
+        storageStream.on("finish", () => {
+            console.log("Finished");
+            res.status(200).send("Finished");
+        });
+
+        storageStream.on("error", (error) => {
+            console.log(error);
+            res.status(500).send("Storage error");
+        });
+
+        req.pipe(storageStream)
         .on("end", () => {
             console.log("Image stored");
-            res.status(200).send("Finished");
+            res.status(200).send("Req ended");
         })
         .on("error", (error) => {
             console.log(error);
             res.status(500).send("Error");
         })
+        
     } else {
         console.log("Unauthorized device");
         res.status(401).send();

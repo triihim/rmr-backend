@@ -70,7 +70,7 @@ async function authorizeRequest(req, res, next) {
     
 }
 
-function validateDevice(device) {
+function authorizeDevice(device) {
     return new Promise((resolve, reject) => {
       const storage = new Storage({projectId: process.env.GCP_PROJECT_ID, keyFilename: process.env.GCP_CREDENTIALS_FILENAME});
       const bucketName = process.env.BUCKET_NAME;
@@ -100,4 +100,4 @@ module.exports.registerUser = registerUser;
 module.exports.loginUser = loginUser;
 module.exports.authorizeRequest = authorizeRequest;
 module.exports.validateToken = validateToken;
-module.exports.validateDevice = validateDevice;
+module.exports.authorizeDevice = authorizeDevice;

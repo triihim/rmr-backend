@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { authorizeRequest } = require("../auth/auth");
 const { registerDevice } = require("./register");
 
-// Authorize all requests to image API.
+// Authorize all requests to the API.
 router.use(authorizeRequest);
 
 router.post("/register", async (req, res) => {
